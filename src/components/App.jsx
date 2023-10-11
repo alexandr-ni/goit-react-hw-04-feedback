@@ -33,11 +33,11 @@ export const App = () => {
   const countTotalFeedback = () =>
     feedbacks.good + feedbacks.neutral + feedbacks.bad;
 
-  function countPositiveFeedbackPercentage() {
+  const countPositiveFeedbackPercentage = () => {
     if (countTotalFeedback() !== 0) {
       return Math.round((feedbacks.good * 100) / countTotalFeedback()) + '%';
     }
-  }
+  };
 
   return (
     <Fragment>
@@ -56,10 +56,7 @@ export const App = () => {
             neutral={feedbacks.neutral}
             bad={feedbacks.bad}
             total={countTotalFeedback(feedbacks)}
-            positivePercentage={countPositiveFeedbackPercentage(
-              feedbacks.good,
-              countTotalFeedback(feedbacks)
-            )}
+            positivePercentage={countPositiveFeedbackPercentage()}
           />
         )}
       </Section>
