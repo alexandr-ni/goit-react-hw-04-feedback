@@ -1,72 +1,68 @@
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 import { Statistic } from './Statistic/Statistic';
-import { Component } from 'react';
 import { Section } from './Section/Section';
 import { Notification } from './Notification/Notification';
 
-function countTotalFeedback(state) {
-  return state.good + state.neutral + state.bad;
-}
-
-function countPositiveFeedbackPercentage(good, total) {
-  if (total !== 0) {
-    return Math.round((good * 100) / total) + '%';
-  }
-  return;
-}
-
-export class App extends Component {
-  state = {
+export const App = () => {
+  const [feedbacks, setFeedbacks] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-  };
+  });
 
-  clickButton = click => {
+  const clickButton = click => {
     if (click.target.textContent === 'Good') {
-      this.setState(prevState => ({
-        good: prevState.good + 1,
+      setFeedbacks(prevFeedback => ({
+        ...prevFeedback,
+        good: feedbacks.good + 1,
       }));
     } else if (click.target.textContent === 'Neutral') {
-      this.setState(prevState => ({
-        neutral: prevState.neutral + 1,
+      setFeedbacks(prevFeedback => ({
+        ...prevFeedback,
+        neutral: feedbacks.neutral + 1,
       }));
     } else if (click.target.textContent === 'Bad') {
-      this.setState(prevState => ({
-        bad: prevState.bad + 1,
+      setFeedbacks(prevFeedback => ({
+        ...prevFeedback,
+        bad: feedbacks.bad + 1,
       }));
     }
   };
 
-  render() {
-    const emote = this.state;
+  const countTotalFeedback = () =>
+    feedbacks.good + feedbacks.neutral + feedbacks.bad;
 
-    return (
-      <Fragment>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={Object.keys(this.state)}
-            onLeaveFeedback={this.clickButton}
-          />
-        </Section>
-        <Section title="Statistics">
-          {countTotalFeedback(emote) === 0 ? (
-            <Notification message="There is no feedback" />
-          ) : (
-            <Statistic
-              good={emote.good}
-              neutral={emote.neutral}
-              bad={emote.bad}
-              total={countTotalFeedback(emote)}
-              positivePercentage={countPositiveFeedbackPercentage(
-                emote.good,
-                countTotalFeedback(emote)
-              )}
-            />
-          )}
-        </Section>
-      </Fragment>
-    );
+  function countPositiveFeedbackPercentage() {
+    if (countTotalFeedback() !== 0) {
+      return Math.round((feedbacks.good * 100) / countTotalFeedback()) + '%';
+    }
   }
-}
+
+  return (
+    <Fragment>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={Object.keys(feedbacks)}
+          onLeaveFeedback={clickButton}
+        />
+      </Section>
+      <Section title="Statistics">
+        {countTotalFeedback() === 0 ? (
+          <Notification message="There is no feedback" />
+        ) : (
+          <Statistic
+            good={feedbacks.good}
+            neutral={feedbacks.neutral}
+            bad={feedbacks.bad}
+            total={countTotalFeedback(feedbacks)}
+            positivePercentage={countPositiveFeedbackPercentage(
+              feedbacks.good,
+              countTotalFeedback(feedbacks)
+            )}
+          />
+        )}
+      </Section>
+    </Fragment>
+  );
+};
